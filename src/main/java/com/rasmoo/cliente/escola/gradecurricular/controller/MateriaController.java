@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
 import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
+import com.rasmoo.cliente.escola.gradecurricular.service.IMateriaService;
 
 @RestController
 @RequestMapping("/materia")
@@ -23,6 +24,9 @@ public class MateriaController {
 	
 	@Autowired
 	private IMateriaRepository materiaRepository;
+	
+	@Autowired
+	private IMateriaService materiaService;
 	
 	@GetMapping
 	public ResponseEntity<List<MateriaEntity>> listarMaterias() {
@@ -47,37 +51,11 @@ public class MateriaController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Boolean> excluirMateria( @PathVariable Long id) {
-		try {
-			
-			this.materiaRepository.deleteById(id);
-			return ResponseEntity.status(HttpStatus.OK).body(true);
-			
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.excluir(id));
 	}
 	
 	@PutMapping
 	public ResponseEntity<Boolean> atualizarMateria(@RequestBody MateriaEntity materia) {
-		try {
-			
-			// Buscarei a materia que irá ser atualizada
-			MateriaEntity materiaEntityAtualizada = this.materiaRepository.findById(materia.getId()).get();
-			
-			// Atualizamos os valores setando
-			materiaEntityAtualizada.setNome(materia.getNome());
-			materiaEntityAtualizada.setCodigo(materia.getCodigo());
-			materiaEntityAtualizada.setHoras(materia.getHoras());
-			materiaEntityAtualizada.setNome(materia.getNome());
-			materiaEntityAtualizada.setFrequencia(materia.getFrequencia());
-			
-			//salvamos as alteracoes
-			this.materiaRepository.save(materiaEntityAtualizada);
-			
-			return ResponseEntity.status(HttpStatus.OK).body(true);
-			
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.atualizar(materia));
 	}
 }
