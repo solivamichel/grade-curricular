@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rasmoo.cliente.escola.gradecurricular.dto.MateriaDto;
-import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
 import com.rasmoo.cliente.escola.gradecurricular.service.IMateriaService;
 
 @RestController
@@ -28,12 +27,12 @@ public class MateriaController {
 	private IMateriaService materiaService;
 	
 	@GetMapping
-	public ResponseEntity<List<MateriaEntity>> listarMaterias() {
+	public ResponseEntity<List<MateriaDto>> listarMaterias() {
 		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.listar());
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<MateriaEntity> consultaMateria(@PathVariable Long id) {
+	public ResponseEntity<MateriaDto> consultaMateria(@PathVariable Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.consultar(id));
 	}
 	
