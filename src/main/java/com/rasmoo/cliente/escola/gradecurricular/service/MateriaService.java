@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.rasmoo.cliente.escola.gradecurricular.dto.MateriaDto;
 import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
 import com.rasmoo.cliente.escola.gradecurricular.exception.MateriaException;
 import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
@@ -19,29 +21,22 @@ public class MateriaService implements IMateriaService {
 	private IMateriaRepository materiaRepository;
 
 	@Override
-	public Boolean atualizar(MateriaEntity materia) {
-		
-			try {
+	public Boolean atualizar(MateriaDto materia) {
+		try {
+			Optional<MateriaEntity> materiaOptional = this.materiaRepository.findById(materia.getId());
 			
-				MateriaEntity materiaEntityAtualizada = this.consultar(materia.getId());
-			
-				// Atualizamos os valores setando
-				materiaEntityAtualizada.setNome(materia.getNome());
-				materiaEntityAtualizada.setCodigo(materia.getCodigo());
-				materiaEntityAtualizada.setHoras(materia.getHoras());
-				materiaEntityAtualizada.setNome(materia.getNome());
-				materiaEntityAtualizada.setFrequencia(materia.getFrequencia());
-
-				// salvamos as alteracoes
+			if( materiaOptional.isPresent() ) {
+				ModelMapper mapper = new ModelMapper();
+				
+				MateriaEntity materiaEntityAtualizada = mapper.map(materia, MateriaEntity.class);
+				
 				this.materiaRepository.save(materiaEntityAtualizada);
-			
-			return Boolean.TRUE;
-		
-		} catch (MateriaException m) {
-			throw m;
-		
-		} catch (Exception e) {
-			throw e;
+				
+				return true;
+			}
+				return false;
+		}  catch (Exception e) {
+			return false;
 		}
 	}
 
@@ -85,9 +80,12 @@ public class MateriaService implements IMateriaService {
 	}
 
 	@Override
-	public Boolean cadastrar(MateriaEntity materia) {
+	public Boolean cadastrar(MateriaDto materia) {
 		try {
-			this.materiaRepository.save(materia);
+			ModelMapper mapper = new ModelMapper();
+			MateriaEntity materiaEntity = mapper.map(materia, MateriaEntity.class);
+			this.materiaRepository.save(materiaEntity);
+			
 			return true;
 		} catch (Exception e) {
 			return false;
